@@ -1,0 +1,327 @@
+{
+	"metadata": {
+		"type": "App"
+	},
+	"project": {
+		"shadows": true,
+		"shadowType": 1,
+		"toneMapping": 0,
+		"toneMappingExposure": 1
+	},
+	"camera": {
+		"metadata": {
+			"version": 4.6,
+			"type": "Object",
+			"generator": "Object3D.toJSON"
+		},
+		"object": {
+			"uuid": "4AC7ADED-CC22-4B16-8218-2E0A0C38C8F8",
+			"type": "PerspectiveCamera",
+			"name": "Camera",
+			"layers": 1,
+			"matrix": [-0.2570045199149874,-2.7755575111282357e-17,-0.9664101822731731,0,0.19034011571380122,0.980412537897491,-0.05061853750808377,0,0.9474806023724156,-0.19695580698653353,-0.2519704384412769,0,3.1581352459742726,0.6938849575201016,-0.7899432262734083,1],
+			"up": [0,1,0],
+			"fov": 50,
+			"zoom": 1,
+			"near": 0.1,
+			"far": 10000,
+			"focus": 10,
+			"aspect": 1.3159203980099503,
+			"filmGauge": 35,
+			"filmOffset": 0
+		}
+	},
+	"scene": {
+		"metadata": {
+			"version": 4.6,
+			"type": "Object",
+			"generator": "Object3D.toJSON"
+		},
+		"geometries": [
+			{
+				"uuid": "EA781333-F3AE-470D-9110-A9724FCB42AA",
+				"type": "IcosahedronGeometry",
+				"radius": 1,
+				"detail": 24
+			},
+			{
+				"uuid": "fe59d678-a9f6-47fc-8f09-d84c9728d3fc",
+				"type": "BoxGeometry",
+				"width": 1,
+				"height": 1,
+				"depth": 1,
+				"widthSegments": 1,
+				"heightSegments": 1,
+				"depthSegments": 1
+			},
+			{
+				"uuid": "986529f1-38cf-4c46-bb65-0b4a118a5804",
+				"type": "BoxGeometry",
+				"width": 1,
+				"height": 1,
+				"depth": 1,
+				"widthSegments": 1,
+				"heightSegments": 1,
+				"depthSegments": 1
+			},
+			{
+				"uuid": "b74aadc5-92a2-46a4-bbef-22df223d73ea",
+				"type": "BoxGeometry",
+				"width": 1,
+				"height": 1,
+				"depth": 1,
+				"widthSegments": 1,
+				"heightSegments": 1,
+				"depthSegments": 1
+			}],
+		"materials": [
+			{
+				"uuid": "50ED51F1-DEA4-4B61-8082-BF41609E8C27",
+				"type": "ShaderMaterial",
+				"blendColor": 0,
+				"forceSinglePass": true,
+				"wireframe": true,
+				"fog": false,
+				"glslVersion": null,
+				"uniforms": {
+					"time": {
+						"value": 0
+					}
+				},
+				"vertexShader": "uniform float time;\nvarying vec3 vPosition;\nvoid main() {\n\tvPosition = position;\n\tvPosition.x += sin( time + vPosition.z * 4.0 ) / 4.0;\n\tvPosition.y += cos( time + vPosition.z * 4.0 ) / 4.0;\n\tgl_Position = projectionMatrix * modelViewMatrix * vec4( vPosition, 1.0 );\n}",
+				"fragmentShader": "varying vec3 vPosition;\nvoid main() {\n\tgl_FragColor = vec4( vPosition * 2.0, 1.0 );\n}",
+				"lights": false,
+				"clipping": false
+			},
+			{
+				"uuid": "4154827d-bdd1-4882-9379-d7560a829ad1",
+				"type": "ShaderMaterial",
+				"name": "SkyShader",
+				"side": 1,
+				"blendColor": 0,
+				"depthWrite": false,
+				"forceSinglePass": true,
+				"fog": false,
+				"glslVersion": null,
+				"uniforms": {
+					"turbidity": {
+						"value": 10.967303020426808
+					},
+					"rayleigh": {
+						"value": 0.5916568150284708
+					},
+					"mieCoefficient": {
+						"value": 0.07648251225155149
+					},
+					"mieDirectionalG": {
+						"value": 0.8
+					},
+					"sunPosition": {
+						"type": "v3",
+						"value": [0.9561725835686767,6.123233995736766e-17,-0.2928036721620853]
+					},
+					"up": {
+						"type": "v3",
+						"value": [0,1,0]
+					}
+				},
+				"vertexShader": "\n\t\tuniform vec3 sunPosition;\n\t\tuniform float rayleigh;\n\t\tuniform float turbidity;\n\t\tuniform float mieCoefficient;\n\t\tuniform vec3 up;\n\n\t\tvarying vec3 vWorldPosition;\n\t\tvarying vec3 vSunDirection;\n\t\tvarying float vSunfade;\n\t\tvarying vec3 vBetaR;\n\t\tvarying vec3 vBetaM;\n\t\tvarying float vSunE;\n\n\t\t// constants for atmospheric scattering\n\t\tconst float e = 2.71828182845904523536028747135266249775724709369995957;\n\t\tconst float pi = 3.141592653589793238462643383279502884197169;\n\n\t\t// wavelength of used primaries, according to preetham\n\t\tconst vec3 lambda = vec3( 680E-9, 550E-9, 450E-9 );\n\t\t// this pre-calcuation replaces older TotalRayleigh(vec3 lambda) function:\n\t\t// (8.0 * pow(pi, 3.0) * pow(pow(n, 2.0) - 1.0, 2.0) * (6.0 + 3.0 * pn)) / (3.0 * N * pow(lambda, vec3(4.0)) * (6.0 - 7.0 * pn))\n\t\tconst vec3 totalRayleigh = vec3( 5.804542996261093E-6, 1.3562911419845635E-5, 3.0265902468824876E-5 );\n\n\t\t// mie stuff\n\t\t// K coefficient for the primaries\n\t\tconst float v = 4.0;\n\t\tconst vec3 K = vec3( 0.686, 0.678, 0.666 );\n\t\t// MieConst = pi * pow( ( 2.0 * pi ) / lambda, vec3( v - 2.0 ) ) * K\n\t\tconst vec3 MieConst = vec3( 1.8399918514433978E14, 2.7798023919660528E14, 4.0790479543861094E14 );\n\n\t\t// earth shadow hack\n\t\t// cutoffAngle = pi / 1.95;\n\t\tconst float cutoffAngle = 1.6110731556870734;\n\t\tconst float steepness = 1.5;\n\t\tconst float EE = 1000.0;\n\n\t\tfloat sunIntensity( float zenithAngleCos ) {\n\t\t\tzenithAngleCos = clamp( zenithAngleCos, -1.0, 1.0 );\n\t\t\treturn EE * max( 0.0, 1.0 - pow( e, -( ( cutoffAngle - acos( zenithAngleCos ) ) / steepness ) ) );\n\t\t}\n\n\t\tvec3 totalMie( float T ) {\n\t\t\tfloat c = ( 0.2 * T ) * 10E-18;\n\t\t\treturn 0.434 * c * MieConst;\n\t\t}\n\n\t\tvoid main() {\n\n\t\t\tvec4 worldPosition = modelMatrix * vec4( position, 1.0 );\n\t\t\tvWorldPosition = worldPosition.xyz;\n\n\t\t\tgl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );\n\t\t\tgl_Position.z = gl_Position.w; // set z to camera.far\n\n\t\t\tvSunDirection = normalize( sunPosition );\n\n\t\t\tvSunE = sunIntensity( dot( vSunDirection, up ) );\n\n\t\t\tvSunfade = 1.0 - clamp( 1.0 - exp( ( sunPosition.y / 450000.0 ) ), 0.0, 1.0 );\n\n\t\t\tfloat rayleighCoefficient = rayleigh - ( 1.0 * ( 1.0 - vSunfade ) );\n\n\t\t\t// extinction (absorbtion + out scattering)\n\t\t\t// rayleigh coefficients\n\t\t\tvBetaR = totalRayleigh * rayleighCoefficient;\n\n\t\t\t// mie coefficients\n\t\t\tvBetaM = totalMie( turbidity ) * mieCoefficient;\n\n\t\t}",
+				"fragmentShader": "\n\t\tvarying vec3 vWorldPosition;\n\t\tvarying vec3 vSunDirection;\n\t\tvarying float vSunfade;\n\t\tvarying vec3 vBetaR;\n\t\tvarying vec3 vBetaM;\n\t\tvarying float vSunE;\n\n\t\tuniform float mieDirectionalG;\n\t\tuniform vec3 up;\n\n\t\t// constants for atmospheric scattering\n\t\tconst float pi = 3.141592653589793238462643383279502884197169;\n\n\t\tconst float n = 1.0003; // refractive index of air\n\t\tconst float N = 2.545E25; // number of molecules per unit volume for air at 288.15K and 1013mb (sea level -45 celsius)\n\n\t\t// optical length at zenith for molecules\n\t\tconst float rayleighZenithLength = 8.4E3;\n\t\tconst float mieZenithLength = 1.25E3;\n\t\t// 66 arc seconds -> degrees, and the cosine of that\n\t\tconst float sunAngularDiameterCos = 0.999956676946448443553574619906976478926848692873900859324;\n\n\t\t// 3.0 / ( 16.0 * pi )\n\t\tconst float THREE_OVER_SIXTEENPI = 0.05968310365946075;\n\t\t// 1.0 / ( 4.0 * pi )\n\t\tconst float ONE_OVER_FOURPI = 0.07957747154594767;\n\n\t\tfloat rayleighPhase( float cosTheta ) {\n\t\t\treturn THREE_OVER_SIXTEENPI * ( 1.0 + pow( cosTheta, 2.0 ) );\n\t\t}\n\n\t\tfloat hgPhase( float cosTheta, float g ) {\n\t\t\tfloat g2 = pow( g, 2.0 );\n\t\t\tfloat inverse = 1.0 / pow( 1.0 - 2.0 * g * cosTheta + g2, 1.5 );\n\t\t\treturn ONE_OVER_FOURPI * ( ( 1.0 - g2 ) * inverse );\n\t\t}\n\n\t\tvoid main() {\n\n\t\t\tvec3 direction = normalize( vWorldPosition - cameraPosition );\n\n\t\t\t// optical length\n\t\t\t// cutoff angle at 90 to avoid singularity in next formula.\n\t\t\tfloat zenithAngle = acos( max( 0.0, dot( up, direction ) ) );\n\t\t\tfloat inverse = 1.0 / ( cos( zenithAngle ) + 0.15 * pow( 93.885 - ( ( zenithAngle * 180.0 ) / pi ), -1.253 ) );\n\t\t\tfloat sR = rayleighZenithLength * inverse;\n\t\t\tfloat sM = mieZenithLength * inverse;\n\n\t\t\t// combined extinction factor\n\t\t\tvec3 Fex = exp( -( vBetaR * sR + vBetaM * sM ) );\n\n\t\t\t// in scattering\n\t\t\tfloat cosTheta = dot( direction, vSunDirection );\n\n\t\t\tfloat rPhase = rayleighPhase( cosTheta * 0.5 + 0.5 );\n\t\t\tvec3 betaRTheta = vBetaR * rPhase;\n\n\t\t\tfloat mPhase = hgPhase( cosTheta, mieDirectionalG );\n\t\t\tvec3 betaMTheta = vBetaM * mPhase;\n\n\t\t\tvec3 Lin = pow( vSunE * ( ( betaRTheta + betaMTheta ) / ( vBetaR + vBetaM ) ) * ( 1.0 - Fex ), vec3( 1.5 ) );\n\t\t\tLin *= mix( vec3( 1.0 ), pow( vSunE * ( ( betaRTheta + betaMTheta ) / ( vBetaR + vBetaM ) ) * Fex, vec3( 1.0 / 2.0 ) ), clamp( pow( 1.0 - dot( up, vSunDirection ), 5.0 ), 0.0, 1.0 ) );\n\n\t\t\t// nightsky\n\t\t\tfloat theta = acos( direction.y ); // elevation --> y-axis, [-pi/2, pi/2]\n\t\t\tfloat phi = atan( direction.z, direction.x ); // azimuth --> x-axis [-pi/2, pi/2]\n\t\t\tvec2 uv = vec2( phi, theta ) / vec2( 2.0 * pi, pi ) + vec2( 0.5, 0.0 );\n\t\t\tvec3 L0 = vec3( 0.1 ) * Fex;\n\n\t\t\t// composition + solar disc\n\t\t\tfloat sundisk = smoothstep( sunAngularDiameterCos, sunAngularDiameterCos + 0.00002, cosTheta );\n\t\t\tL0 += ( vSunE * 19000.0 * Fex ) * sundisk;\n\n\t\t\tvec3 texColor = ( Lin + L0 ) * 0.04 + vec3( 0.0, 0.0003, 0.00075 );\n\n\t\t\tvec3 retColor = pow( texColor, vec3( 1.0 / ( 1.2 + ( 1.2 * vSunfade ) ) ) );\n\n\t\t\tgl_FragColor = vec4( retColor, 1.0 );\n\n\t\t\t#include <tonemapping_fragment>\n\t\t\t#include <colorspace_fragment>\n\n\t\t}",
+				"lights": false,
+				"clipping": false
+			},
+			{
+				"uuid": "ed81c96f-7f11-47c3-b429-ee16fdbd2f2b",
+				"type": "ShaderMaterial",
+				"name": "SkyShader",
+				"side": 1,
+				"blendColor": 0,
+				"depthWrite": false,
+				"forceSinglePass": true,
+				"fog": false,
+				"glslVersion": null,
+				"uniforms": {
+					"turbidity": {
+						"value": 17.8940155024063
+					},
+					"rayleigh": {
+						"value": 2.1934592829185435
+					},
+					"mieCoefficient": {
+						"value": 0.008297588201716081
+					},
+					"mieDirectionalG": {
+						"value": 0.7215327979249754
+					},
+					"sunPosition": {
+						"type": "v3",
+						"value": [-0.7527070226835382,6.123233995736766e-17,0.6583556318608382]
+					},
+					"up": {
+						"type": "v3",
+						"value": [0,1,0]
+					}
+				},
+				"vertexShader": "\n\t\tuniform vec3 sunPosition;\n\t\tuniform float rayleigh;\n\t\tuniform float turbidity;\n\t\tuniform float mieCoefficient;\n\t\tuniform vec3 up;\n\n\t\tvarying vec3 vWorldPosition;\n\t\tvarying vec3 vSunDirection;\n\t\tvarying float vSunfade;\n\t\tvarying vec3 vBetaR;\n\t\tvarying vec3 vBetaM;\n\t\tvarying float vSunE;\n\n\t\t// constants for atmospheric scattering\n\t\tconst float e = 2.71828182845904523536028747135266249775724709369995957;\n\t\tconst float pi = 3.141592653589793238462643383279502884197169;\n\n\t\t// wavelength of used primaries, according to preetham\n\t\tconst vec3 lambda = vec3( 680E-9, 550E-9, 450E-9 );\n\t\t// this pre-calcuation replaces older TotalRayleigh(vec3 lambda) function:\n\t\t// (8.0 * pow(pi, 3.0) * pow(pow(n, 2.0) - 1.0, 2.0) * (6.0 + 3.0 * pn)) / (3.0 * N * pow(lambda, vec3(4.0)) * (6.0 - 7.0 * pn))\n\t\tconst vec3 totalRayleigh = vec3( 5.804542996261093E-6, 1.3562911419845635E-5, 3.0265902468824876E-5 );\n\n\t\t// mie stuff\n\t\t// K coefficient for the primaries\n\t\tconst float v = 4.0;\n\t\tconst vec3 K = vec3( 0.686, 0.678, 0.666 );\n\t\t// MieConst = pi * pow( ( 2.0 * pi ) / lambda, vec3( v - 2.0 ) ) * K\n\t\tconst vec3 MieConst = vec3( 1.8399918514433978E14, 2.7798023919660528E14, 4.0790479543861094E14 );\n\n\t\t// earth shadow hack\n\t\t// cutoffAngle = pi / 1.95;\n\t\tconst float cutoffAngle = 1.6110731556870734;\n\t\tconst float steepness = 1.5;\n\t\tconst float EE = 1000.0;\n\n\t\tfloat sunIntensity( float zenithAngleCos ) {\n\t\t\tzenithAngleCos = clamp( zenithAngleCos, -1.0, 1.0 );\n\t\t\treturn EE * max( 0.0, 1.0 - pow( e, -( ( cutoffAngle - acos( zenithAngleCos ) ) / steepness ) ) );\n\t\t}\n\n\t\tvec3 totalMie( float T ) {\n\t\t\tfloat c = ( 0.2 * T ) * 10E-18;\n\t\t\treturn 0.434 * c * MieConst;\n\t\t}\n\n\t\tvoid main() {\n\n\t\t\tvec4 worldPosition = modelMatrix * vec4( position, 1.0 );\n\t\t\tvWorldPosition = worldPosition.xyz;\n\n\t\t\tgl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );\n\t\t\tgl_Position.z = gl_Position.w; // set z to camera.far\n\n\t\t\tvSunDirection = normalize( sunPosition );\n\n\t\t\tvSunE = sunIntensity( dot( vSunDirection, up ) );\n\n\t\t\tvSunfade = 1.0 - clamp( 1.0 - exp( ( sunPosition.y / 450000.0 ) ), 0.0, 1.0 );\n\n\t\t\tfloat rayleighCoefficient = rayleigh - ( 1.0 * ( 1.0 - vSunfade ) );\n\n\t\t\t// extinction (absorbtion + out scattering)\n\t\t\t// rayleigh coefficients\n\t\t\tvBetaR = totalRayleigh * rayleighCoefficient;\n\n\t\t\t// mie coefficients\n\t\t\tvBetaM = totalMie( turbidity ) * mieCoefficient;\n\n\t\t}",
+				"fragmentShader": "\n\t\tvarying vec3 vWorldPosition;\n\t\tvarying vec3 vSunDirection;\n\t\tvarying float vSunfade;\n\t\tvarying vec3 vBetaR;\n\t\tvarying vec3 vBetaM;\n\t\tvarying float vSunE;\n\n\t\tuniform float mieDirectionalG;\n\t\tuniform vec3 up;\n\n\t\t// constants for atmospheric scattering\n\t\tconst float pi = 3.141592653589793238462643383279502884197169;\n\n\t\tconst float n = 1.0003; // refractive index of air\n\t\tconst float N = 2.545E25; // number of molecules per unit volume for air at 288.15K and 1013mb (sea level -45 celsius)\n\n\t\t// optical length at zenith for molecules\n\t\tconst float rayleighZenithLength = 8.4E3;\n\t\tconst float mieZenithLength = 1.25E3;\n\t\t// 66 arc seconds -> degrees, and the cosine of that\n\t\tconst float sunAngularDiameterCos = 0.999956676946448443553574619906976478926848692873900859324;\n\n\t\t// 3.0 / ( 16.0 * pi )\n\t\tconst float THREE_OVER_SIXTEENPI = 0.05968310365946075;\n\t\t// 1.0 / ( 4.0 * pi )\n\t\tconst float ONE_OVER_FOURPI = 0.07957747154594767;\n\n\t\tfloat rayleighPhase( float cosTheta ) {\n\t\t\treturn THREE_OVER_SIXTEENPI * ( 1.0 + pow( cosTheta, 2.0 ) );\n\t\t}\n\n\t\tfloat hgPhase( float cosTheta, float g ) {\n\t\t\tfloat g2 = pow( g, 2.0 );\n\t\t\tfloat inverse = 1.0 / pow( 1.0 - 2.0 * g * cosTheta + g2, 1.5 );\n\t\t\treturn ONE_OVER_FOURPI * ( ( 1.0 - g2 ) * inverse );\n\t\t}\n\n\t\tvoid main() {\n\n\t\t\tvec3 direction = normalize( vWorldPosition - cameraPosition );\n\n\t\t\t// optical length\n\t\t\t// cutoff angle at 90 to avoid singularity in next formula.\n\t\t\tfloat zenithAngle = acos( max( 0.0, dot( up, direction ) ) );\n\t\t\tfloat inverse = 1.0 / ( cos( zenithAngle ) + 0.15 * pow( 93.885 - ( ( zenithAngle * 180.0 ) / pi ), -1.253 ) );\n\t\t\tfloat sR = rayleighZenithLength * inverse;\n\t\t\tfloat sM = mieZenithLength * inverse;\n\n\t\t\t// combined extinction factor\n\t\t\tvec3 Fex = exp( -( vBetaR * sR + vBetaM * sM ) );\n\n\t\t\t// in scattering\n\t\t\tfloat cosTheta = dot( direction, vSunDirection );\n\n\t\t\tfloat rPhase = rayleighPhase( cosTheta * 0.5 + 0.5 );\n\t\t\tvec3 betaRTheta = vBetaR * rPhase;\n\n\t\t\tfloat mPhase = hgPhase( cosTheta, mieDirectionalG );\n\t\t\tvec3 betaMTheta = vBetaM * mPhase;\n\n\t\t\tvec3 Lin = pow( vSunE * ( ( betaRTheta + betaMTheta ) / ( vBetaR + vBetaM ) ) * ( 1.0 - Fex ), vec3( 1.5 ) );\n\t\t\tLin *= mix( vec3( 1.0 ), pow( vSunE * ( ( betaRTheta + betaMTheta ) / ( vBetaR + vBetaM ) ) * Fex, vec3( 1.0 / 2.0 ) ), clamp( pow( 1.0 - dot( up, vSunDirection ), 5.0 ), 0.0, 1.0 ) );\n\n\t\t\t// nightsky\n\t\t\tfloat theta = acos( direction.y ); // elevation --> y-axis, [-pi/2, pi/2]\n\t\t\tfloat phi = atan( direction.z, direction.x ); // azimuth --> x-axis [-pi/2, pi/2]\n\t\t\tvec2 uv = vec2( phi, theta ) / vec2( 2.0 * pi, pi ) + vec2( 0.5, 0.0 );\n\t\t\tvec3 L0 = vec3( 0.1 ) * Fex;\n\n\t\t\t// composition + solar disc\n\t\t\tfloat sundisk = smoothstep( sunAngularDiameterCos, sunAngularDiameterCos + 0.00002, cosTheta );\n\t\t\tL0 += ( vSunE * 19000.0 * Fex ) * sundisk;\n\n\t\t\tvec3 texColor = ( Lin + L0 ) * 0.04 + vec3( 0.0, 0.0003, 0.00075 );\n\n\t\t\tvec3 retColor = pow( texColor, vec3( 1.0 / ( 1.2 + ( 1.2 * vSunfade ) ) ) );\n\n\t\t\tgl_FragColor = vec4( retColor, 1.0 );\n\n\t\t\t#include <tonemapping_fragment>\n\t\t\t#include <colorspace_fragment>\n\n\t\t}",
+				"lights": false,
+				"clipping": false
+			},
+			{
+				"uuid": "ddfc9af5-b5c0-421f-b65c-a6b10db95c28",
+				"type": "ShaderMaterial",
+				"name": "SkyShader",
+				"side": 1,
+				"blendColor": 0,
+				"depthWrite": false,
+				"forceSinglePass": true,
+				"fog": false,
+				"glslVersion": null,
+				"uniforms": {
+					"turbidity": {
+						"value": 0.21645997149417445
+					},
+					"rayleigh": {
+						"value": 2.381059686435919
+					},
+					"mieCoefficient": {
+						"value": 0.09307778774249502
+					},
+					"mieDirectionalG": {
+						"value": 0.9632468731490762
+					},
+					"sunPosition": {
+						"type": "v3",
+						"value": [-0.7817684230535463,6.123233995736766e-17,0.6235688676612804]
+					},
+					"up": {
+						"type": "v3",
+						"value": [0,1,0]
+					}
+				},
+				"vertexShader": "\n\t\tuniform vec3 sunPosition;\n\t\tuniform float rayleigh;\n\t\tuniform float turbidity;\n\t\tuniform float mieCoefficient;\n\t\tuniform vec3 up;\n\n\t\tvarying vec3 vWorldPosition;\n\t\tvarying vec3 vSunDirection;\n\t\tvarying float vSunfade;\n\t\tvarying vec3 vBetaR;\n\t\tvarying vec3 vBetaM;\n\t\tvarying float vSunE;\n\n\t\t// constants for atmospheric scattering\n\t\tconst float e = 2.71828182845904523536028747135266249775724709369995957;\n\t\tconst float pi = 3.141592653589793238462643383279502884197169;\n\n\t\t// wavelength of used primaries, according to preetham\n\t\tconst vec3 lambda = vec3( 680E-9, 550E-9, 450E-9 );\n\t\t// this pre-calcuation replaces older TotalRayleigh(vec3 lambda) function:\n\t\t// (8.0 * pow(pi, 3.0) * pow(pow(n, 2.0) - 1.0, 2.0) * (6.0 + 3.0 * pn)) / (3.0 * N * pow(lambda, vec3(4.0)) * (6.0 - 7.0 * pn))\n\t\tconst vec3 totalRayleigh = vec3( 5.804542996261093E-6, 1.3562911419845635E-5, 3.0265902468824876E-5 );\n\n\t\t// mie stuff\n\t\t// K coefficient for the primaries\n\t\tconst float v = 4.0;\n\t\tconst vec3 K = vec3( 0.686, 0.678, 0.666 );\n\t\t// MieConst = pi * pow( ( 2.0 * pi ) / lambda, vec3( v - 2.0 ) ) * K\n\t\tconst vec3 MieConst = vec3( 1.8399918514433978E14, 2.7798023919660528E14, 4.0790479543861094E14 );\n\n\t\t// earth shadow hack\n\t\t// cutoffAngle = pi / 1.95;\n\t\tconst float cutoffAngle = 1.6110731556870734;\n\t\tconst float steepness = 1.5;\n\t\tconst float EE = 1000.0;\n\n\t\tfloat sunIntensity( float zenithAngleCos ) {\n\t\t\tzenithAngleCos = clamp( zenithAngleCos, -1.0, 1.0 );\n\t\t\treturn EE * max( 0.0, 1.0 - pow( e, -( ( cutoffAngle - acos( zenithAngleCos ) ) / steepness ) ) );\n\t\t}\n\n\t\tvec3 totalMie( float T ) {\n\t\t\tfloat c = ( 0.2 * T ) * 10E-18;\n\t\t\treturn 0.434 * c * MieConst;\n\t\t}\n\n\t\tvoid main() {\n\n\t\t\tvec4 worldPosition = modelMatrix * vec4( position, 1.0 );\n\t\t\tvWorldPosition = worldPosition.xyz;\n\n\t\t\tgl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );\n\t\t\tgl_Position.z = gl_Position.w; // set z to camera.far\n\n\t\t\tvSunDirection = normalize( sunPosition );\n\n\t\t\tvSunE = sunIntensity( dot( vSunDirection, up ) );\n\n\t\t\tvSunfade = 1.0 - clamp( 1.0 - exp( ( sunPosition.y / 450000.0 ) ), 0.0, 1.0 );\n\n\t\t\tfloat rayleighCoefficient = rayleigh - ( 1.0 * ( 1.0 - vSunfade ) );\n\n\t\t\t// extinction (absorbtion + out scattering)\n\t\t\t// rayleigh coefficients\n\t\t\tvBetaR = totalRayleigh * rayleighCoefficient;\n\n\t\t\t// mie coefficients\n\t\t\tvBetaM = totalMie( turbidity ) * mieCoefficient;\n\n\t\t}",
+				"fragmentShader": "\n\t\tvarying vec3 vWorldPosition;\n\t\tvarying vec3 vSunDirection;\n\t\tvarying float vSunfade;\n\t\tvarying vec3 vBetaR;\n\t\tvarying vec3 vBetaM;\n\t\tvarying float vSunE;\n\n\t\tuniform float mieDirectionalG;\n\t\tuniform vec3 up;\n\n\t\t// constants for atmospheric scattering\n\t\tconst float pi = 3.141592653589793238462643383279502884197169;\n\n\t\tconst float n = 1.0003; // refractive index of air\n\t\tconst float N = 2.545E25; // number of molecules per unit volume for air at 288.15K and 1013mb (sea level -45 celsius)\n\n\t\t// optical length at zenith for molecules\n\t\tconst float rayleighZenithLength = 8.4E3;\n\t\tconst float mieZenithLength = 1.25E3;\n\t\t// 66 arc seconds -> degrees, and the cosine of that\n\t\tconst float sunAngularDiameterCos = 0.999956676946448443553574619906976478926848692873900859324;\n\n\t\t// 3.0 / ( 16.0 * pi )\n\t\tconst float THREE_OVER_SIXTEENPI = 0.05968310365946075;\n\t\t// 1.0 / ( 4.0 * pi )\n\t\tconst float ONE_OVER_FOURPI = 0.07957747154594767;\n\n\t\tfloat rayleighPhase( float cosTheta ) {\n\t\t\treturn THREE_OVER_SIXTEENPI * ( 1.0 + pow( cosTheta, 2.0 ) );\n\t\t}\n\n\t\tfloat hgPhase( float cosTheta, float g ) {\n\t\t\tfloat g2 = pow( g, 2.0 );\n\t\t\tfloat inverse = 1.0 / pow( 1.0 - 2.0 * g * cosTheta + g2, 1.5 );\n\t\t\treturn ONE_OVER_FOURPI * ( ( 1.0 - g2 ) * inverse );\n\t\t}\n\n\t\tvoid main() {\n\n\t\t\tvec3 direction = normalize( vWorldPosition - cameraPosition );\n\n\t\t\t// optical length\n\t\t\t// cutoff angle at 90 to avoid singularity in next formula.\n\t\t\tfloat zenithAngle = acos( max( 0.0, dot( up, direction ) ) );\n\t\t\tfloat inverse = 1.0 / ( cos( zenithAngle ) + 0.15 * pow( 93.885 - ( ( zenithAngle * 180.0 ) / pi ), -1.253 ) );\n\t\t\tfloat sR = rayleighZenithLength * inverse;\n\t\t\tfloat sM = mieZenithLength * inverse;\n\n\t\t\t// combined extinction factor\n\t\t\tvec3 Fex = exp( -( vBetaR * sR + vBetaM * sM ) );\n\n\t\t\t// in scattering\n\t\t\tfloat cosTheta = dot( direction, vSunDirection );\n\n\t\t\tfloat rPhase = rayleighPhase( cosTheta * 0.5 + 0.5 );\n\t\t\tvec3 betaRTheta = vBetaR * rPhase;\n\n\t\t\tfloat mPhase = hgPhase( cosTheta, mieDirectionalG );\n\t\t\tvec3 betaMTheta = vBetaM * mPhase;\n\n\t\t\tvec3 Lin = pow( vSunE * ( ( betaRTheta + betaMTheta ) / ( vBetaR + vBetaM ) ) * ( 1.0 - Fex ), vec3( 1.5 ) );\n\t\t\tLin *= mix( vec3( 1.0 ), pow( vSunE * ( ( betaRTheta + betaMTheta ) / ( vBetaR + vBetaM ) ) * Fex, vec3( 1.0 / 2.0 ) ), clamp( pow( 1.0 - dot( up, vSunDirection ), 5.0 ), 0.0, 1.0 ) );\n\n\t\t\t// nightsky\n\t\t\tfloat theta = acos( direction.y ); // elevation --> y-axis, [-pi/2, pi/2]\n\t\t\tfloat phi = atan( direction.z, direction.x ); // azimuth --> x-axis [-pi/2, pi/2]\n\t\t\tvec2 uv = vec2( phi, theta ) / vec2( 2.0 * pi, pi ) + vec2( 0.5, 0.0 );\n\t\t\tvec3 L0 = vec3( 0.1 ) * Fex;\n\n\t\t\t// composition + solar disc\n\t\t\tfloat sundisk = smoothstep( sunAngularDiameterCos, sunAngularDiameterCos + 0.00002, cosTheta );\n\t\t\tL0 += ( vSunE * 19000.0 * Fex ) * sundisk;\n\n\t\t\tvec3 texColor = ( Lin + L0 ) * 0.04 + vec3( 0.0, 0.0003, 0.00075 );\n\n\t\t\tvec3 retColor = pow( texColor, vec3( 1.0 / ( 1.2 + ( 1.2 * vSunfade ) ) ) );\n\n\t\t\tgl_FragColor = vec4( retColor, 1.0 );\n\n\t\t\t#include <tonemapping_fragment>\n\t\t\t#include <colorspace_fragment>\n\n\t\t}",
+				"lights": false,
+				"clipping": false
+			}],
+		"object": {
+			"uuid": "5FC9ACA9-2A93-474D-AA32-FACC76551914",
+			"type": "Scene",
+			"name": "Scene",
+			"layers": 1,
+			"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
+			"up": [0,1,0],
+			"background": 11184810,
+			"children": [
+				{
+					"uuid": "FC7B6CF2-6386-4F47-9CE6-8ADB9FCA6E1F",
+					"type": "Mesh",
+					"name": "Icosahedron 1",
+					"castShadow": true,
+					"receiveShadow": true,
+					"layers": 1,
+					"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,1.2775379208875557,0,1],
+					"up": [0,1,0],
+					"geometry": "EA781333-F3AE-470D-9110-A9724FCB42AA",
+					"material": "50ED51F1-DEA4-4B61-8082-BF41609E8C27"
+				},
+				{
+					"uuid": "72af6c02-7f22-494d-a3da-6b7d22b6c721",
+					"type": "Object3D",
+					"name": "Sky",
+					"layers": 1,
+					"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
+					"up": [0,1,0],
+					"children": [
+						{
+							"uuid": "cc3b9556-d234-4bc3-a871-5a01798280ff",
+							"type": "Mesh",
+							"castShadow": true,
+							"receiveShadow": true,
+							"layers": 1,
+							"matrix": [450000,0,0,0,0,450000,0,0,0,0,450000,0,0,0,0,1],
+							"up": [0,1,0],
+							"geometry": "fe59d678-a9f6-47fc-8f09-d84c9728d3fc",
+							"material": "4154827d-bdd1-4882-9379-d7560a829ad1"
+						}]
+				},
+				{
+					"uuid": "6bb93949-8fdb-4904-b15f-5af439d5876c",
+					"type": "Object3D",
+					"name": "Sky",
+					"layers": 1,
+					"matrix": [0.5318034723306978,-0.007280582022179917,-0.8468365013049629,0,-0.07391035565133791,0.9957484290806304,-0.05497567926773991,0,0.8436363708046882,0.09182624411830737,0.5290043617463089,0,0,0,0,1],
+					"up": [0,1,0],
+					"children": [
+						{
+							"uuid": "1d1b54c1-e36b-4a34-a9c1-4961952ddf9e",
+							"type": "Mesh",
+							"castShadow": true,
+							"receiveShadow": true,
+							"layers": 1,
+							"matrix": [450000,0,0,0,0,450000,0,0,0,0,450000,0,0,0,0,1],
+							"up": [0,1,0],
+							"geometry": "986529f1-38cf-4c46-bb65-0b4a118a5804",
+							"material": "ed81c96f-7f11-47c3-b429-ee16fdbd2f2b"
+						}]
+				},
+				{
+					"uuid": "c0e40748-e803-4118-9054-8c18eb8323f6",
+					"type": "DirectionalLight",
+					"name": "DirectionalLight",
+					"castShadow": true,
+					"layers": 1,
+					"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,-9.428106697465061,5.052824270754883,9.293838115897273,1],
+					"up": [0,1,0],
+					"color": 16777215,
+					"intensity": 1,
+					"shadow": {
+						"camera": {
+							"uuid": "7ec8111d-cbf2-4d4e-b501-b3e87f8807e6",
+							"type": "OrthographicCamera",
+							"layers": 1,
+							"up": [0,1,0],
+							"zoom": 1,
+							"left": -5,
+							"right": 5,
+							"top": 5,
+							"bottom": -5,
+							"near": 0.5,
+							"far": 500
+						}
+					},
+					"target": "71b0a903-eb71-4755-8be6-6033837cdd27"
+				},
+				{
+					"uuid": "e8235c27-6082-4447-9522-f62aba6527b0",
+					"type": "Object3D",
+					"name": "Sky",
+					"layers": 1,
+					"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
+					"up": [0,1,0],
+					"children": [
+						{
+							"uuid": "ad267897-98e5-4477-9b88-49ce6fe89c8e",
+							"type": "Mesh",
+							"layers": 1,
+							"matrix": [450000,0,0,0,0,450000,0,0,0,0,450000,0,0,0,0,1],
+							"up": [0,1,0],
+							"geometry": "b74aadc5-92a2-46a4-bbef-22df223d73ea",
+							"material": "ddfc9af5-b5c0-421f-b65c-a6b10db95c28"
+						}]
+				}],
+			"backgroundRotation": [0,0,0,
+				"XYZ"],
+			"environmentRotation": [0,0,0,
+				"XYZ"]
+		}
+	},
+	"scripts": {
+		"FC7B6CF2-6386-4F47-9CE6-8ADB9FCA6E1F": [
+			{
+				"name": "",
+				"source": "// Переменные для отслеживания состояния мыши и управления объектом\nlet isDragging = false;  // Отслеживает, зажата ли левая кнопка мыши\nlet previousMousePosition = { x: 0, y: 0 };  // Сохраняет предыдущее положение мыши для расчета движения\nlet zoomLevel = 1;  // Уровень масштаба объекта\nconst minScale = 0.8;  // Минимальный допустимый масштаб\nconst maxScale = 1.5;  // Максимальный допустимый масштаб\n\n// Настройка скорости вращения\nconst rotationSpeed = 0.0001;  // Скорость автоматического вращения объекта\n\nlet object;  // Переменная для хранения ссылки на объект, с которым работает скрипт\n\n// init - вызывается один раз при инициализации скрипта\nfunction init() {\n    console.log('Скрипт управления, автоматического вращения и обновления материала запущен');\n    object = this;  // Сохраняем ссылку на объект, чтобы обращаться к нему в других функциях\n\n    // Устанавливаем начальный масштаб объекта\n    object.scale.set(1, 1, 1);  // Устанавливаем масштаб объекта равным единице по всем осям\n    console.log(`Начальный масштаб объекта установлен: ${object.scale.x}`);  // Логируем начальный масштаб\n\n    // Добавляем слушатели для событий мыши\n    document.addEventListener('mousedown', onMouseDown);  // Обрабатывает нажатие кнопки мыши\n    document.addEventListener('mousemove', onMouseMove);  // Обрабатывает движение мыши\n    document.addEventListener('mouseup', onMouseUp);      // Обрабатывает отпускание кнопки мыши\n    document.addEventListener('wheel', onMouseWheel);     // Обрабатывает прокрутку колесика мыши\n}\n\n// update - вызывается при каждом кадре, обновляет параметры объекта\nfunction update(event) {\n    if (object) {\n        // Автоматическое вращение объекта вокруг оси Y с учетом скорости вращения\n        object.rotation.y += rotationSpeed * event.delta;  // Вращаем объект на угол, пропорциональный rotationSpeed\n        console.log(`Автоматическое вращение - Угол Y: ${object.rotation.y}`);  // Логируем текущее значение угла вращения по Y\n\n        // Обновление материала с использованием uniform-параметра времени\n        if (object.material && object.material.uniforms && object.material.uniforms.time) {\n            object.material.uniforms.time.value = event.time / 500.0;  // Обновляем значение параметра time\n            console.log(`Uniform time обновлен: ${object.material.uniforms.time.value}`);  // Логируем новое значение time\n        }\n    }\n}\n\n// dispose - вызывается при удалении объекта или сцены\nfunction dispose() {\n    console.log('Скрипт завершен');  // Сообщаем в консоль о завершении скрипта\n    document.removeEventListener('mousedown', onMouseDown);  // Удаляем обработчик нажатия мыши\n    document.removeEventListener('mousemove', onMouseMove);  // Удаляем обработчик движения мыши\n    document.removeEventListener('mouseup', onMouseUp);      // Удаляем обработчик отпускания мыши\n    document.removeEventListener('wheel', onMouseWheel);     // Удаляем обработчик прокрутки колесика мыши\n}\n\n// Функции обработки событий\n\n// Обработка нажатия кнопки мыши\nfunction onMouseDown(event) {\n    if (event.button === 0) {  // Проверка на левую кнопку мыши\n        isDragging = true;  // Устанавливаем флаг, что мышь зажата\n        console.log('Левая кнопка мыши нажата - Начало вращения вручную');  // Логируем начало вращения\n    }\n}\n\n// Обработка движения мыши\nfunction onMouseMove(event) {\n    if (isDragging && object) {  // Проверяем, что мышь зажата и объект определен\n        const deltaMove = {\n            x: event.clientX - previousMousePosition.x,  // Расчет смещения по X\n            y: event.clientY - previousMousePosition.y   // Расчет смещения по Y\n        };\n\n        // Ручное вращение объекта по осям X и Y при движении мыши\n        object.rotation.y += deltaMove.x * 0.01;  // Вращаем по оси Y на основе движения мыши по X\n        object.rotation.x += deltaMove.y * 0.01;  // Вращаем по оси X на основе движения мыши по Y\n        console.log(`Ручное вращение - Угол X: ${object.rotation.x}, Угол Y: ${object.rotation.y}`);  // Логируем текущие углы вращения\n    }\n\n    // Обновляем предыдущее положение мыши для следующего кадра\n    previousMousePosition = {\n        x: event.clientX,\n        y: event.clientY\n    };\n}\n\n// Обработка отпускания кнопки мыши\nfunction onMouseUp(event) {\n    if (event.button === 0) {\n        isDragging = false;  // Убираем флаг зажатой мыши\n        console.log('Левая кнопка мыши отпущена - Окончание ручного вращения');  // Логируем завершение вращения\n    }\n}\n\n// Обработка прокрутки колеса мыши для масштабирования\nfunction onMouseWheel(event) {\n    if (object) {\n        // Изменяем масштаб на основе прокрутки колеса мыши\n        zoomLevel -= event.deltaY * 0.002;  // Уменьшаем или увеличиваем уровень зума\n        zoomLevel = Math.max(minScale, Math.min(maxScale, zoomLevel));  // Ограничиваем масштаб между minScale и maxScale\n\n        // Применяем масштабирование к объекту равномерно по всем осям\n        object.scale.set(zoomLevel, zoomLevel, zoomLevel);  // Устанавливаем новый масштаб\n        console.log(`Масштаб изменен - Текущий масштаб: ${object.scale.x}`);  // Логируем текущее значение масштаба\n    }\n}\n"
+			}]
+	},
+	"environment": null
+}
